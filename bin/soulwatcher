@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+'use strict';
+const { execSync } = require('child_process');
+const path = require('path');
+const { tokenizeDeadCode } = require('../lib');
+const constants = require('../lib/constants');
+const stats = [
+  {
+    CodeSmell: "Dead code",
+    Instances: 0,
+    TimeToFix: 0,
+  },
+  {
+    CodeSmell: "Duplicate code",
+    Instances: 0,
+    TimeToFix: 0,
+  },
+];
+
+const projectPath = process.argv[2] || '.';
+const tsPrunePath = path.join(
+  __dirname,
+  '../',
+  './node_modules/ts-prune/lib/index.js'
+);
+const tsPruneResult = execSync(tsPrunePath, { cwd: projectPath });
+const tsPruneTokens = tokenizeDeadCode(tsPruneResult);
+
+stats[0].Instances = tsPruneTokens.length;
+stats[0].TimeToFix = tsPruneTokens.length * constants.DEAD_CODE_FIX
+console.table(stats);

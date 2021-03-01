@@ -1,0 +1,25 @@
+{
+  "name": "soulwatcher",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": "./bin/soulwatcher",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alxolr/soulwatcher.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alxolr/soulwatcher/issues"
+  },
+  "homepage": "https://github.com/alxolr/soulwatcher#readme",
+  "dependencies": {
+    "jscpd": "^3.3.24",
+    "ts-prune": "^0.8.8"
+  }
+}
