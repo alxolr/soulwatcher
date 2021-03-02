@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "watch": "tsc --watch"
   },
-  "bin": "./bin/soulwatcher",
+  "bin": "node ./dist/core/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alxolr/soulwatcher.git"
@@ -21,5 +23,9 @@
   "dependencies": {
     "jscpd": "^3.3.24",
     "ts-prune": "^0.8.8"
+  },
+  "devDependencies": {
+    "@types/node": "^12.20.4",
+    "typescript": "^4.2.2"
   }
 }
