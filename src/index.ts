@@ -2,6 +2,9 @@ import { spawnSync } from 'child_process';
 import { parse } from '@fast-csv/parse';
 import { createReadStream, readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
+import { Runner } from './core/runner';
+import { SlocPlugin } from './plugin/sloc.plugin';
+import { NocuousPlugin } from './plugin/nocuous.plugin';
 
 interface Statistics {
   Path: string;
@@ -23,30 +26,50 @@ interface Statistics {
 (async () => {
   try {
     let projects = yaml.load(readFileSync(process.argv[2], 'utf8'));
-    let everyStats = [];
-    for (let project of projects) {
-      const filePath = `/tmp/${project.name}.csv`;
-      console.log(`Checking ${project.name}`);
-      spawnSync('npx', ['nocuous', 'stat', project.root, '-o', filePath], {
-        cwd: project.path,
-      });
+    let runner = new Runner(projects);
+    let stats: any = {};
+    runner.on('stats', handleStats(stats));
+    runner.add(new SlocPlugin()).add(new NocuousPlugin());
 
-      let result = await parseResults(filePath);
-      result['Project'] = project.name;
+    await runner.execute();
 
-      everyStats.push(result);
-    }
+    console.table(stats);
 
-    let result = everyStats.reduce(aggregateStats, { Total: 0, Files: 0 });
-    delete result.Project;
+    // let everyStats = [];
+    // for (let project of projects) {
+    //   const filePath = `/tmp/${project.name}.csv`;
+    //   console.log(`Checking ${project.name}`);
+    //   spawnSync('npx', ['nocuous', 'stat', project.root, '-o', filePath], {
+    //     cwd: project.path,
+    //   });
 
-    console.table(beautify(result));
+    //   let result = await parseResults(filePath);
+    //   result['Project'] = project.name;
 
-    everyStats.map(beautify).forEach((item) => console.table(item));
+    //   everyStats.push(result);
+    // }
+
+    // let result = everyStats.reduce(aggregateStats, { Total: 0, Files: 0 });
+    // delete result.Project;
+
+    // console.table(beautify(result));
+
+    // everyStats.map(beautify).forEach((item) => console.table(item));
   } catch (err) {
     console.log(err);
   }
 })();
+
+function handleStats(stats: any) {
+  return (data: any) => {
+    for (let key of Object.keys(data)) {
+      if (!(key in stats)) {
+        stats[key] = 0;
+      }
+      stats[key] += data[key];
+    }
+  };
+}
 
 function normalize(row: any): Statistics {
   const item: any = {};
