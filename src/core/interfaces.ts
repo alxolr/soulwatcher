@@ -1,6 +1,6 @@
-export interface IPlugin<T> {
+export interface IPlugin {
   name: string;
-  run<T>(project: IProject): Promise<T>;
+  run(project: IProject): Promise<IStat>;
 }
 
 export interface IProject {
@@ -9,4 +9,6 @@ export interface IProject {
   root: string;
 }
 
-// 4 sprints
+export interface IStat {
+  [k: string]: number | undefined;
+}
